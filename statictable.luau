@@ -1,8 +1,19 @@
+--!strict
+--@NominoDev
+
+export type StaticArray<T> = {
+	insert: (value: T) -> (),
+	remove: (key: number) -> T?,
+	find: (value: T) -> number?,
+	get: () -> {T},
+	length: () -> number
+}
+
 return {
-	create= function<T>(size:number,t:{[number]:T}|nil)
+	create= function<T>(size:number,t:{[number]:T})
 		local private_table = table.create(size) :: {T}
-		
-		local StaticArray = {}
+
+		local StaticArray = {} :: StaticArray<T>
 		StaticArray.insert = function(value:T)
 			while #private_table >= size do
 				table.remove(private_table,1)
@@ -15,15 +26,15 @@ return {
 		StaticArray.find = function(value:T)
 			return table.find(private_table,value)
 		end
-		StaticArray.get = function(key:number) : T
-			return private_table[key]
+		StaticArray.get = function()
+			return table.freeze(private_table)
 		end
 		StaticArray.length = function() : number
 			return #private_table
 		end
 		
-		if type(t) == "table" then
-			for k in pairs(t) do
+		if type(t)=="table" then
+			for k in t do
 				assert(type(k)=="number","StaticArray.create("..size..", t) -> t must be an array (must contain numbers as keys.)")
 			end
 			for _,v in ipairs(t) do
@@ -31,16 +42,16 @@ return {
 			end
 		end
 		
-		return setmetatable(StaticArray,{
+		setmetatable(StaticArray,{
 			__iter = function()
 				return ipairs(private_table)
 			end,
-			__index = function(self,k)
-				if type(k) == "number" then
+			__index = function(self:typeof(StaticArray),k:number|"insert"|"remove"|"find"|"get"|"length") : typeof(StaticArray)|T
+				if type(k) == "number" then -- getting table directly here.
 					return private_table[k]
+				else
+					return rawget(self,k) :: StaticArray<T> -- getting methods.
 				end
-				
-				return rawget(self,k)
 			end,
 			__newindex = function(self,k,v)
 				if type(k) == "number" then
@@ -55,5 +66,7 @@ return {
 				end
 			end
 		})
+
+		return StaticArray :: typeof(StaticArray)
 	end,
 }
