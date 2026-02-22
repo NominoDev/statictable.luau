@@ -8,9 +8,8 @@ export type StaticArray<T> = {
 	get: () -> {T},
 	length: () -> number
 }
-
 return {
-	create= function<T>(size:number,t:{[number]:T})
+	create = function<T>(size:number,t:{[number]:T})
 		local private_table = table.create(size) :: {T}
 
 		local StaticArray = {} :: StaticArray<T>
@@ -27,7 +26,7 @@ return {
 			return table.find(private_table,value)
 		end
 		StaticArray.get = function()
-			return table.freeze(private_table)
+			return table.freeze(table.clone(private_table))
 		end
 		StaticArray.length = function() : number
 			return #private_table
