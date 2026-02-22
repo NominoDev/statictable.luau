@@ -6,10 +6,11 @@ export type StaticArray<T> = {
 	remove: (key: number) -> T?,
 	find: (value: T) -> number?,
 	get: () -> {T},
-	length: () -> number
+	length: () -> number,
+	clear: () -> ()
 }
 return {
-	create = function<T>(size:number,t:{[number]:T})
+	create = function<T>(size:number,t:{T}|nil)
 		local private_table = table.create(size) :: {T}
 
 		local StaticArray = {} :: StaticArray<T>
@@ -30,6 +31,9 @@ return {
 		end
 		StaticArray.length = function() : number
 			return #private_table
+		end
+		StaticArray.clear = function()
+			table.clear(private_table)
 		end
 		
 		if type(t)=="table" then
