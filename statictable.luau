@@ -1,7 +1,7 @@
 --!strict
 --@NominoDev
 
-export type StaticArray<T> = {
+export type StaticArrayType<T> = {
 	insert: (value: T) -> (),
 	remove: (key: number) -> T?,
 	find: (value: T) -> number?,
@@ -13,7 +13,7 @@ return {
 	create = function<T>(size:number,t:{T}|nil)
 		local private_table = table.create(size) :: {T}
 
-		local StaticArray = {} :: StaticArray<T>
+		local StaticArray = {} :: StaticArrayType<T>
 		StaticArray.insert = function(value:T)
 			while #private_table >= size do
 				table.remove(private_table,1)
@@ -53,19 +53,19 @@ return {
 				if type(k) == "number" then -- getting table directly here.
 					return private_table[k]
 				else
-					return rawget(self,k) :: StaticArray<T> -- getting methods.
+					return rawget(self,k) :: StaticArrayType<T> -- getting methods.
 				end
 			end,
 			__newindex = function(self,k,v)
-				if type(k) == "number" then
+				if type(k) == "number" and k==math.floor(k) then
 					if k<=size and k>0 then
 						private_table[k] = v
 						return
 					else
-						error("Attept to write out of bound. StaticArray size range from 1 to "..size..". Got "..k)
+						error("Attempt to write out of bound. StaticArray size range from 1 to "..size..". Got "..k)
 					end
 				else
-					error("Attept to write with a non number index. Only number indexes are accepted in arrays")
+					error("Attempt to write with a non number index. Only number indexes are accepted in arrays")
 				end
 			end
 		})
