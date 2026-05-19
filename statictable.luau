@@ -1,4 +1,4 @@
---!strict
+--!nonstrict
 --@NominoDev
 
 export type StaticArrayType<T> = {
@@ -65,11 +65,11 @@ return {
 						error("Attempt to write out of bound. StaticArray size range from 1 to "..size..". Got "..k)
 					end
 				else
-					error("Attempt to write with a non number index. Only number indexes are accepted in arrays")
+					error("Attempt to write with a non integer index. Only integer indexes are accepted in arrays")
 				end
 			end
 		})
 
-		return StaticArray :: typeof(StaticArray)
+		return StaticArray :: StaticArrayType<T>
 	end,
 }
